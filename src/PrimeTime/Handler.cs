@@ -8,7 +8,7 @@ namespace PrimeTime
     {
         public Handler() { }
 
-        public async Task ProcessRequests(StreamReader reader, StreamWriter writer)
+        public async Task ProcessRequestsAsync(StreamReader reader, StreamWriter writer)
         {
             string? json;
             writer.AutoFlush = true;
@@ -16,7 +16,7 @@ namespace PrimeTime
             {
                 try
                 {
-                    bool prime = processJsonAndValidate(json);
+                    bool prime = ProcessJsonAndValidate(json);
                     Output output = new Output
                     {
                         Method = "isPrime",
@@ -34,8 +34,11 @@ namespace PrimeTime
             }
         }
 
-        private bool processJsonAndValidate(string? json)
+        private bool ProcessJsonAndValidate(string? json)
         {
+            if (json == null) {
+                return false;
+            }
             Input? input = JsonConvert.DeserializeObject<Input>(json);
             if (input == null || input.Method != "isPrime")
             {
@@ -44,12 +47,12 @@ namespace PrimeTime
             bool prime = false;
             if (Math.Abs(input.Number % 1) <= (Double.Epsilon * 100) || input.Number < 0)
             {
-                prime = isPrime((BigInteger)input.Number);
+                prime = IsPrime((BigInteger)input.Number);
             }
             return prime;
         }
 
-        private bool isPrime(BigInteger number)
+        private bool IsPrime(BigInteger number)
         {
             if (number <= 1) return false;
             if (number == 2) return true;

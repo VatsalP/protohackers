@@ -1,14 +1,16 @@
+
 using Common.Library;
 using Common.Library.Client;
 using System.Net;
 using System.Net.Sockets;
 
-namespace PrimeTime;
+namespace BudgetChat;
 
-class PrimeTimeTcpServer : TcpServer
+class BudgetChatTcpServer : TcpServer
 {
     private Handler _handler;
-    public PrimeTimeTcpServer(IPAddress localaddr, int port) : base(localaddr, port)
+
+    public BudgetChatTcpServer(IPAddress localaddr, int port) : base(localaddr, port)
     {
         _handler = new Handler();
     }
@@ -17,10 +19,7 @@ class PrimeTimeTcpServer : TcpServer
     {
         try
         {
-            using NetworkStream stream = client.GetStream();
-            using StreamReader reader = new StreamReader(stream);
-            using StreamWriter writer = new StreamWriter(stream);
-            await _handler.ProcessRequestsAsync(reader, writer);
+            await _handler.ProcessRequestsAsync(info);
         }
         catch (SocketException e)
         {
@@ -28,6 +27,12 @@ class PrimeTimeTcpServer : TcpServer
         }
         finally
         {
+            if (!info.ServerForceDisconnect) {
+                _handler.RemoveUserFromChatRoom(info);
+                if (info.Name != null) {
+                    await _handler.AnnounceLeaveMessageAsync(info.Name).ConfigureAwait(false);;
+                }
+            }
             client.Close();
             Console.WriteLine($"Client disconnected: IP {info.Ip} Port {info.Port}");
         }

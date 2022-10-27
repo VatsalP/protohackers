@@ -24,7 +24,7 @@ public abstract class TcpServer
         }
     }
 
-    public async Task startServer()
+    public async Task StartServerAsync()
     {
         if (_server == null)
         {
@@ -37,10 +37,14 @@ public abstract class TcpServer
             while (true)
             {
                 TcpClient client = await _server.AcceptTcpClientAsync();
-                ClientInfo info = GetClientInfo(client);
+                NetworkStream stream = client.GetStream();
+                StreamReader reader = new StreamReader(stream);
+                StreamWriter writer = new StreamWriter(stream);
+                writer.AutoFlush = true;
+                ClientInfo info = GetClientInfo(client, stream, reader, writer);
                 Console.WriteLine($"Client Connected: IP {info.Ip} Port {info.Port}");
                 // Fire and forget
-                _ = Task.Run(() => handleClient(client, info));
+                _ = Task.Run(() => HandleClientAsync(client, info));
             }
         }
         catch (SocketException e)
@@ -54,13 +58,25 @@ public abstract class TcpServer
     }
 
 
-    private ClientInfo GetClientInfo(TcpClient client)
+    private ClientInfo GetClientInfo(TcpClient client, NetworkStream stream, StreamReader reader, StreamWriter writer)
     {
-        IPEndPoint remoteEndpoint = (IPEndPoint)client.Client.RemoteEndPoint ?? new IPEndPoint(0, 0);
-        IPAddress clientIp = remoteEndpoint.Address;
-        int clientPort = remoteEndpoint.Port;
-        return new ClientInfo(clientIp, clientPort);
+        ClientInfo clientInfo = new();
+
+        IPEndPoint? remoteEndpoint = client.Client.RemoteEndPoint as IPEndPoint;
+        IPAddress clientIp = remoteEndpoint?.Address ?? IPAddress.None;
+        int clientPort = remoteEndpoint?.Port ?? -1;
+        clientInfo.SetIP(clientIp);
+        clientInfo.Port = clientPort;
+
+
+        clientInfo.Stream = stream;
+        clientInfo.Reader = reader;
+        clientInfo.Writer = writer;
+
+        clientInfo.ServerForceDisconnect = false;
+
+        return clientInfo;
     }
 
-    public abstract Task handleClient(TcpClient client, ClientInfo info);
+    public abstract Task HandleClientAsync(TcpClient client, ClientInfo info);
 }

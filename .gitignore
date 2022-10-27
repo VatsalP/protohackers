@@ -529,3 +529,5 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
+
+.vscode/

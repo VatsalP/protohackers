@@ -5,7 +5,7 @@ namespace PrimeTime.Models
     internal class Output
     {
         [JsonProperty("method")]
-        public string Method { get; set; }
+        public string? Method { get; set; }
 
 
         [JsonProperty("prime")]

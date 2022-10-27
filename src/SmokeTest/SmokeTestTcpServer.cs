@@ -11,14 +11,13 @@ class SmokeTestTcpServer : TcpServer
     {
     }
 
-    public override async Task handleClient(TcpClient client, ClientInfo info)
+    public override async Task HandleClientAsync(TcpClient client, ClientInfo info)
     {
         try
         {
-            using NetworkStream stream = client.GetStream();
-            using StreamReader reader = new StreamReader(stream);
-            using StreamWriter writer = new StreamWriter(stream);
-            await reader.BaseStream.CopyToAsync(writer.BaseStream).ConfigureAwait(false);
+            _ = info.Reader ?? throw new ArgumentNullException();
+            _ = info.Writer ?? throw new ArgumentNullException();
+            await info.Reader.BaseStream.CopyToAsync(info.Writer.BaseStream).ConfigureAwait(false);
         }
         catch (SocketException e)
         {

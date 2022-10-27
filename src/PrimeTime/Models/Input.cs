@@ -6,7 +6,7 @@ namespace PrimeTime.Models
     internal class Input
     {
         [JsonProperty("method", Required = Required.Always)]
-        public string Method { get; set; }
+        public string? Method { get; set; }
 
 
         [JsonProperty("number", Required = Required.Always)]

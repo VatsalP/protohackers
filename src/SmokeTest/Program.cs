@@ -2,4 +2,4 @@
 using System.Net;
 
 SmokeTestTcpServer server = new SmokeTestTcpServer(IPAddress.Any, 8080);
-await server.startServer();
+await server.StartServerAsync();

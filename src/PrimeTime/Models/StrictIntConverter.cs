@@ -15,6 +15,7 @@ namespace PrimeTime.Models
             return false;
         }
 
+#pragma warning disable CS8765
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
 #pragma warning disable CS8603 // Possible null reference return.
@@ -33,4 +34,5 @@ namespace PrimeTime.Models
             throw new NotImplementedException();
         }
     }
+#pragma warning restore CS8765
 }
