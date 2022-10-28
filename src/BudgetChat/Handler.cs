@@ -20,9 +20,9 @@ namespace BudgetChat
             string? username;
             string? chatMessage;
 
-            info.Writer.WriteLine("Welcome to budgetchat! What shall I call you?");
+            await info.Writer.WriteLineAsync("Welcome to budgetchat! What shall I call you?").ConfigureAwait(false);
 
-            username = info.Reader.ReadLine();
+            username = await info.Reader.ReadLineAsync().ConfigureAwait(false);
 
             if (username == null || !IsUsernameValid(username))
             {
@@ -38,8 +38,7 @@ namespace BudgetChat
 
             while ((chatMessage = await info.Reader.ReadLineAsync().ConfigureAwait(false)) != null)
             {
-                await SendMessageToRoomAsync(chatMessage);
-                chatMessage = String.Empty;
+                await SendChatMessageAsync(chatMessage, info);
             }
         }
 
@@ -60,11 +59,22 @@ namespace BudgetChat
             await SendMessageToRoomAsync(announceMessage).ConfigureAwait(false);
         }
 
-        private async Task SendMessageToRoomAsync(string message)
+        private async Task SendChatMessageAsync(string chatMessage, ClientInfo info)
         {
-            foreach (ClientInfo info in _chatRoom.Values)
+            string message = $"[{info.Name}] {chatMessage}";
+            await SendMessageToRoomAsync(message, info).ConfigureAwait(false);
+        }
+
+        private async Task SendMessageToRoomAsync(string message, ClientInfo? clientToNotSendMessage=null)
+        {
+            foreach (var kv in _chatRoom)
             {
-                if (info.Writer != null)
+                if (clientToNotSendMessage != null && kv.Key == (clientToNotSendMessage.GetIP(), clientToNotSendMessage.Port))
+                {
+                    continue;
+                }
+                ClientInfo info = kv.Value;
+                if (info != clientToNotSendMessage && info.Writer != null)
                 {
                     await info.Writer.WriteLineAsync(message).ConfigureAwait(false);
                 }
