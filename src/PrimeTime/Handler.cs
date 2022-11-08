@@ -36,7 +36,8 @@ namespace PrimeTime
 
         private bool ProcessJsonAndValidate(string? json)
         {
-            if (json == null) {
+            if (json == null)
+            {
                 return false;
             }
             Input? input = JsonConvert.DeserializeObject<Input>(json);

@@ -27,10 +27,12 @@ class BudgetChatTcpServer : TcpServer
         }
         finally
         {
-            if (!info.ServerForceDisconnect) {
+            if (!info.ServerForceDisconnect)
+            {
                 _handler.RemoveUserFromChatRoom(info);
-                if (info.Name != null) {
-                    await _handler.AnnounceLeaveMessageAsync(info.Name).ConfigureAwait(false);;
+                if (info.Name != null)
+                {
+                    await _handler.AnnounceLeaveMessageAsync(info.Name).ConfigureAwait(false); ;
                 }
             }
             client.Close();

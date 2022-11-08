@@ -65,7 +65,7 @@ namespace BudgetChat
             await SendMessageToRoomAsync(message, info).ConfigureAwait(false);
         }
 
-        private async Task SendMessageToRoomAsync(string message, ClientInfo? clientToNotSendMessage=null)
+        private async Task SendMessageToRoomAsync(string message, ClientInfo? clientToNotSendMessage = null)
         {
             foreach (var kv in _chatRoom)
             {
@@ -88,7 +88,7 @@ namespace BudgetChat
 
         private bool IsUsernameValid(string username)
         {
-            if (username.Length > 1 && username.Length <= 16)
+            if (username.Length is > 1 and <= 16)
             {
                 return true;
             }
